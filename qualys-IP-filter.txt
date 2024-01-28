@@ -1,0 +1,79 @@
+#IP filter with nslookup functionality
+
+import os
+import sys
+import pandas as pd
+import socket
+import subprocess
+import re
+ 
+ 
+os.remove(r"c:\Users\rstuartii\Documents\reggie\Qualys\ipnames.csv")
+ 
+df = pd.read_csv(r"C:\Users\rstuartii\Documents\reggie\Qualys\Scan-Report-1.csv")
+ 
+#Using the Qualys report that give us ip and frequency of notification,
+#this script fetches the dns names of those ips and outputs them.
+#We sort by frequency and then dabble with POC tables.
+ 
+ 
+step1 = df[['IP','Type','Severity']]
+ 
+step2 = step1.loc[step1['Severity'] == 5]
+ 
+#Find the total number of Level 5 Vulnerabilities
+step3 = step2[step2['Type'].str.contains("Vuln")]
+ 
+#Consolidate duplicate IP addresses to find the most troublesome servers.
+step4 = step3['IP'].value_counts()
+ 
+#write and re-read dataframe to fix issues.
+step4.to_csv((r"C:\Users\rstuartii\Documents\reggie\Qualys\step4-out.csv"))
+ 
+step5 = pd.read_csv(r"C:\Users\rstuartii\Documents\reggie\Qualys\step4-out.csv")
+ 
+step5.rename(columns = {'IP' : 'IP', 'count' : 'Frequency'}, inplace = True)
+ 
+ip_list = step5.loc[:, 'IP']
+ 
+# lookup ip address to get machine name
+with open(r"c:\Users\rstuartii\Documents\reggie\Qualys\ipnames.csv", "a") as f:
+ 
+    print("Machine_Name", file=f)
+ 
+    for i in ip_list:
+        try:
+            a = socket.gethostbyaddr(i)
+            print (a[0], file=f)
+        except socket.herror :
+            print("Host not found", file=f)
+        continue
+ 
+ip_names =  pd.read_csv(r"c:\Users\rstuartii\Documents\reggie\Qualys\ipnames.csv")
+ 
+report = step5.join(ip_names)
+ 
+report.to_csv((r"C:\Users\rstuartii\Documents\reggie\Qualys\report.csv"))
+#We now have a list of the culprits in order of greatest number of faults
+ 
+#We want to match the systems to their manager(s)
+ 
+#Finally, we want to go back to the original report and add the list of faults to the record.
+ 
+sys_con = pd.read_csv((r"C:\Users\rstuartii\Downloads\owssvr-all.csv"))
+sys_con_use = sys_con[['Server','Primary IP Address','Stakeholder']]
+sys_con_use = sys_con_use.rename(columns={'Primary IP Address' : 'IP'})
+ 
+#Find the matches between report and sys_contact_list...
+ 
+final = report.merge(sys_con_use, on='IP')
+ 
+final2 = final[['IP','Frequency','Server','Stakeholder']]
+ 
+final2.to_csv((r"C:\Users\rstuartii\Documents\reggie\Qualys\Level5Vulnerabilities.csv"))
+ 
+#Now that we have the culprits, counts and responsibles, let get a list of the issues for each,
+#Go back to the original df and take a look at Title column.
+ 
+remediate = report.merge(df, on='IP')
+remediate.to_csv((r"C:\Users\rstuartii\Documents\reggie\Qualys\remediate.csv"))
