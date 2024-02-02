@@ -1,0 +1,46 @@
+#top 57 ad hoc reports
+
+import pandas as pd
+
+#sccm_status = pd.read_csv(r"C:\Users\rstuartii\Documents\reggie\Qualys\Remediation\remediate-top57-servers_sccm_status.csv")
+
+#CR = sccm_status[sccm_status['SCCM Stats'].str.contains('CR')]
+#CB = sccm_status[sccm_status['SCCM Stats'].str.contains('CB')]
+#CG = sccm_status[sccm_status['SCCM Stats'].str.contains('CG')]
+#CY = sccm_status[sccm_status['SCCM Stats'].str.contains('CY')]
+#CO = sccm_status[sccm_status['SCCM Stats'].str.contains('CO')]
+
+
+#Generate a report showing the alerts for a server 
+#load list of servers
+
+#servers = pd.read_csv(r"C:\Users\rstuartii\Documents\reggie\Qualys\Remediation\ips2get_reports_on.csv")
+
+#ip_list = servers.loc[:, 'IP']
+
+#load alert data
+#df = pd.read_csv(r"C:\Users\rstuartii\Documents\reggie\Qualys\Scan_Reports\Scan-Report-1.csv")
+#full_scan = df[['IP','DNS','Title','Type','Severity']]
+
+#find all occurances of server string in alert_data
+
+#report = alert_data.merge(ip_list)
+
+#Write to file
+#report.to_csv((r"C:\Users\rstuartii\Documents\reggie\Qualys\Remediation\first_app_to_remediate.csv"))
+
+#exclude lines
+#no_sec_updates = report[report['Title'].str.contains("Windows Security Update") == False]
+
+#highest frequency of alerts
+#most_frq_fault = report['Title'].value_counts()
+
+#Read full dataset
+full_scan = df[['IP','DNS','Title','Type','Severity']]
+
+#Exclude Windows Security Updates
+no_sec_updates = full_scan[full_scan['Title'].str.contains("Windows Security Update") == False]
+
+#find unique values in a column
+
+#host_count = len(pd.unique(full_scan['IP']))
