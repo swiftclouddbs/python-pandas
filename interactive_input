@@ -1,0 +1,21 @@
+import pandas as pd
+
+df = pd.read_csv(".\Systems_Full_Inventory.csv")
+
+#take input from command line
+sys = input("Which system would you like info for? ")
+
+result = df.loc[df['SYSTEM'] == sys]
+
+final = result[['APPLICATION', 'PRIMARY TECHNICAL CONTACT']]
+
+print(final.to_string(index=False))
+
+Get input numbers from cmd line
+##first = input("Enter a number 1-10? ")
+##second = input("Enter a number 11-20? ")
+##numA = float(first)
+##numB =float(second)
+##
+##result = numA/numB
+##print(result)
