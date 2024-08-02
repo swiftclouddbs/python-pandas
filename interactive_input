@@ -2,20 +2,20 @@ import pandas as pd
 
 df = pd.read_csv(".\Systems_Full_Inventory.csv")
 
-#take input from command line
-sys = input("Which system would you like info for? ")
+df['SYSTEM'].astype('|S')
+df['APPLICATION'].astype('|S')
+df['PRIMARY TECHNICAL CONTACT'].astype('|S')
+df['ADDITIONAL CONTACTS'].astype('|S')
 
-result = df.loc[df['SYSTEM'] == sys]
+while True:
 
-final = result[['APPLICATION', 'PRIMARY TECHNICAL CONTACT']]
+    sys = input("Which system would you like POC info for? ")
+    result = df.loc[(df['SYSTEM'].str.contains(sys, case=False, na=False)|(df['INTERNAL IP'].str.contains(sys, case=False)) |(df['EXTERNAL IP'].str.contains(sys, case=False, na=False)))]
+    final = result[['APPLICATION', 'PRIMARY TECHNICAL CONTACT', 'ADDITIONAL CONTACTS']]
 
-print(final.to_string(index=False))
+    if(len(final) == 0):
+        print("Not found!")
 
-Get input numbers from cmd line
-##first = input("Enter a number 1-10? ")
-##second = input("Enter a number 11-20? ")
-##numA = float(first)
-##numB =float(second)
-##
-##result = numA/numB
-##print(result)
+    if sys == 'stop' : break
+    print(final.to_string(index=False))
+
